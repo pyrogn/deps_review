@@ -72,7 +72,7 @@ class DepStatsRaw:
 
 def get_data_for_stats(data=data) -> dict[DepName, DepStatsRaw]:
     """Get raw stats for departments"""
-    dep_stats_raw: defaultdict[str, DepStatsRaw] = defaultdict(DepStatsRaw)
+    dep_stats_raw: dict[str, DepStatsRaw] = defaultdict(DepStatsRaw)
     for row in data:
         dep_stats_raw[row.dep].employee_cnt += 1
         dep_stats_raw[row.dep].salary_list.append(float(row.salary))
