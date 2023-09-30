@@ -7,6 +7,8 @@ from typing import NamedTuple
 
 
 class DataRow(NamedTuple):
+    """Row of source data, only necessary columns"""
+
     dep: str
     team: str
     salary: float
@@ -43,7 +45,7 @@ def sort_dict_by_key(dikt: dict) -> dict:
 
 
 def sort_dep_teams(data: list[DataRow] = data) -> dict[DepName, list[TeamName]]:
-    """Read data and return dictionary with department and its team, sorted"""
+    """Read data and return dictionary with department and its teams, sorted"""
     deps = defaultdict(set)
     for row in data:
         deps[row.dep].add(row.team)
