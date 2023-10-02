@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import NamedTuple
+from typing import Callable, NamedTuple
 
 
 class DataRow(NamedTuple):
@@ -40,7 +40,7 @@ TeamName = str
 
 
 def sort_dict_by_key(dikt: dict) -> dict:
-    """Sort a dictionary by keys"""
+    """Sort a dictionary by key"""
     return dict(sorted(dikt.items()))
 
 
@@ -145,37 +145,51 @@ def write_csv_dep(
         return f"Saved as {Path(filename)}"
 
 
+class Command(NamedTuple):
+    """Command for user to choose"""
+
+    func: Callable
+    description: str
+
+
 def menu() -> None:
     """Choose available action and get results"""
 
-    available_options = {
-        1: "Print deps and teams",
-        2: "Get stats on deps with cnt employees and salary",
-        3: "Write stats on deps",
-    }
-    str_options = "\n".join(
-        f"{num}. {command}" for num, command in available_options.items()
+    available_options: list[Command] = [
+        Command(
+            get_deps_hierarchy,
+            "Get all departments and teams",
+        ),
+        Command(
+            get_deps_stats_pretty,
+            "Get stats on departments with count of employees and salary",
+        ),
+        Command(
+            write_csv_dep,
+            "Write stats on departments to csv file",
+        ),
+    ]
+    all_options_str = "\n".join(
+        f"{num}. {command.description}"
+        for num, command in enumerate(available_options, 1)
     )
-    print(str_options)
+    print(all_options_str)
 
     while True:
         try:
             choice = int(input("What's ur option, brother: "))
-            if choice not in available_options:
+            if choice not in range(1, len(available_options) + 1):
                 raise ValueError
         except ValueError:
-            print("Enter a number from 1 to 3")
+            print(f"Enter a number from 1 to {len(available_options)}")
         else:
-            break
+            idx_choose = choice - 1
+            result: str = available_options[idx_choose].func()
+            print(result)
 
-    ordered_funcs_as_options = [
-        get_deps_hierarchy,
-        get_deps_stats_pretty,
-        write_csv_dep,
-    ]
-    option_to_func = dict(enumerate(ordered_funcs_as_options, start=1))
-    result: str = option_to_func[choice]()
-    print(result)
+            import sys
+
+            sys.exit(0)
 
 
 if __name__ == "__main__":
